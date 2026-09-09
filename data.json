@@ -1,10 +1,10 @@
 {
   "restaurant": {
-    "name": "Il Tuo Ristorante",
+    "name": "ISOLA D'AMORE",
     "tagline": "MENU DIGITALE",
-    "address": "Via Esempio 1, Città",
-    "hours": "Aperti tutti i giorni 12:00–15:00 / 19:00–23:00",
-    "logo": ""
+    "address": "Via G. Battista Grassi, 5, 22069 Rovellasca CO",
+    "hours": "giovedì 11:30–22  venerdì 11:30–14:30  sabato 11:30–22  domenica 11:30–14:30 18:30–22  lunedì 11:30–14:30 18:30–22  martedì 11:30–14:30 18:30–22  mercoledì Chiuso",
+    "logo": "images/logo-1788996881012.jpg"
   },
   "categories": [
     {
@@ -17,8 +17,19 @@
           "price": 6.5,
           "desc": "Pane casereccio abbrustolito, pomodorino fresco, basilico e un filo d'olio extravergine.",
           "image": "",
-          "badges": ["veg"],
+          "badges": [
+            "veg"
+          ],
           "allergens": "Contiene glutine."
+        },
+        {
+          "id": "item-mtuqk1p5fd5ra",
+          "name": "Nuovo piatto",
+          "price": 0,
+          "desc": "",
+          "image": "",
+          "badges": [],
+          "allergens": ""
         }
       ]
     },
