@@ -16,11 +16,11 @@
           "name": "Bruschetta al pomodoro",
           "price": 6.5,
           "desc": "Pane casereccio abbrustolito, pomodorino fresco, basilico e un filo d'olio extravergine.",
-          "image": "",
+          "image": "images/bruschetta-al-pomodoro-1788997071117.jpg",
           "badges": [
             "veg"
           ],
-          "allergens": "Contiene glutine."
+          "allergens": ""
         },
         {
           "id": "item-mtuqk1p5fd5ra",
