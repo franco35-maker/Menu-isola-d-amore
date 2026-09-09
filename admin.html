@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pannello Admin — Menu Digitale</title>
+<script src="config.js"></script>
+<style>
+  :root{
+    --ink:#1f2e22; --paper:#f6f1e4; --paper-dim:#ece4d0; --wine:#8c2f39; --wine-dark:#6e2129;
+    --gold:#b08968; --charcoal:#2b2621; --line:rgba(43,38,33,0.18); --ok:#3c5a34; --err:#8c2f39;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--paper); font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif; color:var(--charcoal); }
+  header{ background:var(--ink); color:var(--paper); padding:1.2rem 1.4rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  header h1{ font-size:1.15rem; margin:0; font-weight:600; }
+  header .actions{ display:flex; gap:0.6rem; align-items:center; }
+  a.btn, button.btn{ font:inherit; font-size:0.85rem; padding:0.5rem 0.9rem; border-radius:8px; border:1px solid var(--gold); background:transparent; color:var(--paper); cursor:pointer; text-decoration:none; }
+  button.btn.primary{ background:var(--wine); border-color:var(--wine); font-weight:600; }
+  button.btn.danger{ border-color:var(--err); color:#f2c9c9; }
+
+  #loginScreen{ max-width:440px; margin:4rem auto; background:#fff; border-radius:14px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+  #loginScreen h2{ margin-top:0; }
+  #loginScreen label{ display:block; font-size:0.85rem; font-weight:600; margin:1rem 0 0.3rem; }
+  #loginScreen input{ width:100%; padding:0.6rem 0.7rem; border:1px solid var(--line); border-radius:8px; font-size:0.95rem; }
+  #loginScreen .hint{ font-size:0.8rem; opacity:0.7; margin-top:0.4rem; line-height:1.5; }
+  #loginError{ color:var(--err); font-size:0.85rem; margin-top:0.8rem; display:none; }
+
+  main{ max-width:760px; margin:0 auto; padding:1.4rem 1rem 6rem; display:none; }
+  .card{ background:#fff; border-radius:14px; padding:1.3rem 1.4rem; margin-bottom:1.2rem; box-shadow:0 1px 6px rgba(0,0,0,0.06); }
+  .card h2{ font-size:1.05rem; margin:0 0 1rem; color:var(--wine-dark); }
+  .field{ margin-bottom:0.9rem; }
+  .field label{ display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.3rem; opacity:0.85; }
+  .field input[type=text], .field input[type=number], .field textarea{
+    width:100%; padding:0.55rem 0.7rem; border:1px solid var(--line); border-radius:8px; font-size:0.92rem; font-family:inherit;
+  }
+  .field textarea{ min-height:64px; resize:vertical; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+  @media (max-width:520px){ .row2{ grid-template-columns:1fr; } }
+
+  .img-upload{ display:flex; align-items:center; gap:0.8rem; margin-top:0.2rem; }
+  .img-preview{ width:64px; height:64px; border-radius:10px; object-fit:cover; background:var(--paper-dim); flex-shrink:0; }
+  .img-upload input[type=file]{ font-size:0.82rem; }
+
+  .badges-row{ display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.3rem; }
+  .badges-row label{ display:flex; align-items:center; gap:0.35rem; font-weight:500; font-size:0.85rem; }
+
+  .dish-card{ border:1px solid var(--line); border-radius:10px; padding:1rem; margin-bottom:0.9rem; position:relative; }
+  .dish-card .remove-btn{ position:absolute; top:0.7rem; right:0.7rem; background:none; border:none; color:var(--err); cursor:pointer; font-size:0.8rem; font-weight:600; }
+
+  .category-card{ border:1px solid var(--line); border-radius:12px; padding:1rem; margin-bottom:1.2rem; background:#fffdf8; }
+  .category-head{ display:flex; align-items:center; gap:0.6rem; margin-bottom:0.9rem; }
+  .category-head input{ flex:1; font-weight:700; font-size:1rem; padding:0.5rem 0.7rem; border:1px solid var(--line); border-radius:8px; }
+  .category-head button{ background:none; border:none; color:var(--err); cursor:pointer; font-size:0.82rem; font-weight:600; white-space:nowrap; }
+
+  .add-btn{ display:inline-block; margin-top:0.4rem; background:var(--paper-dim); border:1px dashed var(--gold); border-radius:8px; padding:0.5rem 0.9rem; font-size:0.85rem; font-weight:600; cursor:pointer; color:var(--wine-dark); }
+
+  #saveBar{ position:fixed; bottom:0; left:0; right:0; background:var(--ink); padding:0.9rem 1.2rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; z-index:50; }
+  #saveStatus{ color:var(--paper); font-size:0.85rem; opacity:0.85; }
+  #saveBtn{ font-size:0.95rem; padding:0.65rem 1.4rem; }
+
+  .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.4); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:0.4rem; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <h2>Accedi al pannello</h2>
+  <p style="font-size:0.88rem; opacity:0.8;">Incolla il tuo GitHub Personal Access Token per sbloccare la modifica del menu. Il token resta salvato solo in questo browser, non viene mai pubblicato sul sito.</p>
+  <label for="tokenInput">GitHub Token</label>
+  <input type="text" id="tokenInput" placeholder="github_pat_xxxxxxxxxxxx" autocomplete="off">
+  <button class="btn primary" id="loginBtn" style="margin-top:1rem; color:#fff;">Accedi</button>
+  <div id="loginError">Token non valido o repository non raggiungibile. Controlla il token e la configurazione in config.js.</div>
+  <p class="hint">Non hai ancora un token? Vai su GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens, crealo con accesso limitato al solo repository di questo menu e permesso "Contents: Read and write".</p>
+</div>
+
+<header id="topHeader" style="display:none;">
+  <h1>Pannello Menu</h1>
+  <div class="actions">
+    <a class="btn" href="index.html" target="_blank">Anteprima sito</a>
+    <button class="btn danger" id="logoutBtn">Esci</button>
+  </div>
+</header>
+
+<main id="editorMain">
+  <div class="card" id="settingsCard"></div>
+  <div id="categoriesContainer"></div>
+  <button class="add-btn" id="addCategoryBtn">+ Nuova categoria</button>
+</main>
+
+<div id="saveBar" style="display:none;">
+  <span id="saveStatus">Modifiche non salvate vengono perse se chiudi la pagina.</span>
+  <button class="btn primary" id="saveBtn" style="color:#fff;">Salva tutte le modifiche</button>
+</div>
+
+<script>
+  const CONFIG = window.MENU_CONFIG;
+  const API_BASE = `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/`;
+  let TOKEN = localStorage.getItem('gh_menu_admin_token') || '';
+  let DATA = null;
+  let DATA_SHA = null;
+
+  function uid(prefix){ return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+  function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,'')))); }
+
+  async function ghFetch(path, options){
+    options = options || {};
+    options.headers = Object.assign({
+      'Authorization': 'Bearer ' + TOKEN,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    }, options.headers || {});
+    return fetch(API_BASE + path, options);
+  }
+
+  // ---------------- LOGIN ----------------
+  const loginScreen = document.getElementById('loginScreen');
+  const loginBtn = document.getElementById('loginBtn');
+  const tokenInput = document.getElementById('tokenInput');
+  const loginError = document.getElementById('loginError');
+
+  async function tryLogin(token){
+    TOKEN = token;
+    loginError.style.display = 'none';
+    loginBtn.textContent = 'Verifica in corso...';
+    try{
+      const res = await ghFetch(CONFIG.dataPath + '?ref=' + CONFIG.branch);
+      if(!res.ok) throw new Error('unauthorized');
+      const json = await res.json();
+      DATA = JSON.parse(b64DecodeUnicode(json.content));
+      DATA_SHA = json.sha;
+      localStorage.setItem('gh_menu_admin_token', token);
+      showEditor();
+    }catch(e){
+      loginError.style.display = 'block';
+      loginBtn.textContent = 'Accedi';
+    }
+  }
+
+  loginBtn.addEventListener('click', () => {
+    const t = tokenInput.value.trim();
+    if(t) tryLogin(t);
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('gh_menu_admin_token');
+    location.reload();
+  });
+
+  function showEditor(){
+    loginScreen.style.display = 'none';
+    document.getElementById('topHeader').style.display = 'flex';
+    document.getElementById('editorMain').style.display = 'block';
+    document.getElementById('saveBar').style.display = 'flex';
+    renderAll();
+  }
+
+  // ---------------- IMAGE COMPRESSION + UPLOAD ----------------
+  function compressImage(file, maxWidth, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxWidth / img.width);
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadImage(file, slug, onDone){
+    const base64 = await compressImage(file, 1000, 0.75);
+    const path = 'images/' + slug + '-' + Date.now() + '.jpg';
+    const res = await ghFetch(path, {
+      method: 'PUT',
+      body: JSON.stringify({ message: 'Carica immagine ' + slug, content: base64, branch: CONFIG.branch })
+    });
+    if(!res.ok){ alert('Errore nel caricamento immagine.'); return; }
+    onDone(path);
+  }
+
+  function slugify(text){
+    return (text || 'img').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,30) || 'img';
+  }
+
+  // ---------------- RENDER ----------------
+  const settingsCard = document.getElementById('settingsCard');
+  const categoriesContainer = document.getElementById('categoriesContainer');
+
+  function renderAll(){
+    renderSettings();
+    renderCategories();
+  }
+
+  function renderSettings(){
+    settingsCard.innerHTML = '';
+    const h2 = document.createElement('h2');
+    h2.textContent = 'Impostazioni ristorante';
+    settingsCard.appendChild(h2);
+
+    const fields = [
+      { key:'name', label:'Nome ristorante' },
+      { key:'tagline', label:'Sottotitolo (es. MENU DIGITALE)' },
+      { key:'address', label:'Indirizzo' },
+      { key:'hours', label:'Orari' }
+    ];
+    fields.forEach(f => {
+      const wrap = document.createElement('div');
+      wrap.className = 'field';
+      const label = document.createElement('label');
+      label.textContent = f.label;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = DATA.restaurant[f.key] || '';
+      input.addEventListener('input', () => { DATA.restaurant[f.key] = input.value; });
+      wrap.appendChild(label); wrap.appendChild(input);
+      settingsCard.appendChild(wrap);
+    });
+
+    const logoWrap = document.createElement('div');
+    logoWrap.className = 'field';
+    const logoLabel = document.createElement('label');
+    logoLabel.textContent = 'Logo';
+    const imgUploadRow = document.createElement('div');
+    imgUploadRow.className = 'img-upload';
+    const preview = document.createElement('img');
+    preview.className = 'img-preview';
+    if(DATA.restaurant.logo) preview.src = DATA.restaurant.logo;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', async () => {
+      if(!fileInput.files[0]) return;
+      preview.style.opacity = '0.5';
+      await uploadImage(fileInput.files[0], 'logo', (path) => {
+        DATA.restaurant.logo = path;
+        preview.src = path + '?t=' + Date.now();
+        preview.style.opacity = '1';
+      });
+    });
+    imgUploadRow.appendChild(preview); imgUploadRow.appendChild(fileInput);
+    logoWrap.appendChild(logoLabel); logoWrap.appendChild(imgUploadRow);
+    settingsCard.appendChild(logoWrap);
+  }
+
+  function renderCategories(){
+    categoriesContainer.innerHTML = '';
+    DATA.categories.forEach((cat) => {
+      const card = document.createElement('div');
+      card.className = 'category-card';
+
+      const head = document.createElement('div');
+      head.className = 'category-head';
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = cat.name;
+      nameInput.addEventListener('input', () => { cat.name = nameInput.value; });
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'Elimina categoria';
+      delBtn.addEventListener('click', () => {
+        if(confirm(`Eliminare la categoria "${cat.name}" e tutti i suoi piatti?`)){
+          DATA.categories = DATA.categories.filter(c => c.id !== cat.id);
+          renderCategories();
+        }
+      });
+      head.appendChild(nameInput); head.appendChild(delBtn);
+      card.appendChild(head);
+
+      cat.items.forEach((item) => {
+        card.appendChild(renderDishCard(cat, item));
+      });
+
+      const addDishBtn = document.createElement('button');
+      addDishBtn.className = 'add-btn';
+      addDishBtn.textContent = '+ Aggiungi piatto';
+      addDishBtn.addEventListener('click', () => {
+        cat.items.push({ id: uid('item'), name:'Nuovo piatto', price:0, desc:'', image:'', badges:[], allergens:'' });
+        renderCategories();
+      });
+      card.appendChild(addDishBtn);
+
+      categoriesContainer.appendChild(card);
+    });
+  }
+
+  function renderDishCard(cat, item){
+    const card = document.createElement('div');
+    card.className = 'dish-card';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = 'Elimina';
+    removeBtn.addEventListener('click', () => {
+      if(confirm(`Eliminare "${item.name}"?`)){
+        cat.items = cat.items.filter(i => i.id !== item.id);
+        renderCategories();
+      }
+    });
+    card.appendChild(removeBtn);
+
+    const row2 = document.createElement('div');
+    row2.className = 'row2';
+
+    const nameField = document.createElement('div');
+    nameField.className = 'field';
+    nameField.innerHTML = '<label>Nome piatto</label>';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text'; nameInput.value = item.name;
+    nameInput.addEventListener('input', () => { item.name = nameInput.value; });
+    nameField.appendChild(nameInput);
+
+    const priceField = document.createElement('div');
+    priceField.className = 'field';
+    priceField.innerHTML = '<label>Prezzo (€)</label>';
+    const priceInput = document.createElement('input');
+    priceInput.type = 'number'; priceInput.step = '0.5'; priceInput.value = item.price;
+    priceInput.addEventListener('input', () => { item.price = parseFloat(priceInput.value) || 0; });
+    priceField.appendChild(priceInput);
+
+    row2.appendChild(nameField); row2.appendChild(priceField);
+    card.appendChild(row2);
+
+    const descField = document.createElement('div');
+    descField.className = 'field';
+    descField.innerHTML = '<label>Descrizione</label>';
+    const descInput = document.createElement('textarea');
+    descInput.value = item.desc || '';
+    descInput.addEventListener('input', () => { item.desc = descInput.value; });
+    descField.appendChild(descInput);
+    card.appendChild(descField);
+
+    const allergensField = document.createElement('div');
+    allergensField.className = 'field';
+    allergensField.innerHTML = '<label>Allergeni</label>';
+    const allergensInput = document.createElement('input');
+    allergensInput.type = 'text'; allergensInput.value = item.allergens || '';
+    allergensInput.addEventListener('input', () => { item.allergens = allergensInput.value; });
+    allergensField.appendChild(allergensInput);
+    card.appendChild(allergensField);
+
+    const imgField = document.createElement('div');
+    imgField.className = 'field';
+    imgField.innerHTML = '<label>Foto piatto</label>';
+    const imgRow = document.createElement('div');
+    imgRow.className = 'img-upload';
+    const preview = document.createElement('img');
+    preview.className = 'img-preview';
+    if(item.image) preview.src = item.image;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file'; fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', async () => {
+      if(!fileInput.files[0]) return;
+      preview.style.opacity = '0.5';
+      await uploadImage(fileInput.files[0], slugify(item.name), (path) => {
+        item.image = path;
+        preview.src = path + '?t=' + Date.now();
+        preview.style.opacity = '1';
+      });
+    });
+    imgRow.appendChild(preview); imgRow.appendChild(fileInput);
+    imgField.appendChild(imgRow);
+    card.appendChild(imgField);
+
+    const badgesField = document.createElement('div');
+    badgesField.className = 'field';
+    badgesField.innerHTML = '<label>Etichette</label>';
+    const badgesRow = document.createElement('div');
+    badgesRow.className = 'badges-row';
+    [['veg','Vegetariano'],['spicy','Piccante'],['gf','Senza glutine']].forEach(([key,label]) => {
+      const wrap = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = (item.badges || []).includes(key);
+      cb.addEventListener('change', () => {
+        item.badges = item.badges || [];
+        if(cb.checked){ if(!item.badges.includes(key)) item.badges.push(key); }
+        else{ item.badges = item.badges.filter(b => b !== key); }
+      });
+      wrap.appendChild(cb);
+      wrap.appendChild(document.createTextNode(label));
+      badgesRow.appendChild(wrap);
+    });
+    badgesField.appendChild(badgesRow);
+    card.appendChild(badgesField);
+
+    return card;
+  }
+
+  document.getElementById('addCategoryBtn').addEventListener('click', () => {
+    DATA.categories.push({ id: uid('cat'), name: 'Nuova categoria', items: [] });
+    renderCategories();
+  });
+
+  // ---------------- SAVE ----------------
+  const saveBtn = document.getElementById('saveBtn');
+  const saveStatus = document.getElementById('saveStatus');
+
+  saveBtn.addEventListener('click', async () => {
+    saveBtn.disabled = true;
+    saveStatus.innerHTML = '<span class="spinner"></span>Salvataggio in corso...';
+    try{
+      const content = b64EncodeUnicode(JSON.stringify(DATA, null, 2));
+      const res = await ghFetch(CONFIG.dataPath, {
+        method: 'PUT',
+        body: JSON.stringify({ message: 'Aggiornamento menu', content, sha: DATA_SHA, branch: CONFIG.branch })
+      });
+      if(!res.ok) throw new Error('save failed');
+      const json = await res.json();
+      DATA_SHA = json.content.sha;
+      saveStatus.textContent = 'Salvato ✓ — il sito pubblico si aggiornerà entro un minuto circa.';
+    }catch(e){
+      saveStatus.textContent = 'Errore nel salvataggio. Riprova.';
+    }
+    saveBtn.disabled = false;
+  });
+
+  // ---------------- AUTO-LOGIN IF TOKEN SAVED ----------------
+  if(TOKEN){ tokenInput.value = TOKEN; tryLogin(TOKEN); }
+</script>
+</body>
+</html>

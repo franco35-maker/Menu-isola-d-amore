@@ -1,0 +1,41 @@
+{
+  "restaurant": {
+    "name": "Il Tuo Ristorante",
+    "tagline": "MENU DIGITALE",
+    "address": "Via Esempio 1, Città",
+    "hours": "Aperti tutti i giorni 12:00–15:00 / 19:00–23:00",
+    "logo": ""
+  },
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "Antipasti",
+      "items": [
+        {
+          "id": "item-1",
+          "name": "Bruschetta al pomodoro",
+          "price": 6.5,
+          "desc": "Pane casereccio abbrustolito, pomodorino fresco, basilico e un filo d'olio extravergine.",
+          "image": "",
+          "badges": ["veg"],
+          "allergens": "Contiene glutine."
+        }
+      ]
+    },
+    {
+      "id": "cat-2",
+      "name": "Primi",
+      "items": [
+        {
+          "id": "item-2",
+          "name": "Tagliatelle al ragù",
+          "price": 11,
+          "desc": "Pasta fresca all'uovo con ragù di manzo cotto lentamente per 6 ore.",
+          "image": "",
+          "badges": [],
+          "allergens": "Contiene glutine, uova."
+        }
+      ]
+    }
+  ]
+}
