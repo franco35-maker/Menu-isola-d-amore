@@ -6,150 +6,135 @@
 <title>Menu Digitale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --red: #A32638;
-    --red-dark: #7C1B29;
-    --gold: #E2A63B;
-    --gold-dark: #B9832F;
-    --ink: #241A15;
-    --parchment: #FBF3E3;
-    --parchment-dim: #F1E4C9;
-    --teal: #2F5D50;
-    --line: rgba(36,26,21,0.15);
+    --ink: #1a1512;
+    --gold: #b8935a;
+    --gold-dark: #9a7640;
+    --wine: #6d2430;
+    --parchment: #faf6ee;
+    --parchment-dim: #f0e9d8;
+    --text: #2a231d;
+    --line: rgba(42,35,29,0.14);
   }
   *{ box-sizing: border-box; }
-  html, body{ margin:0; padding:0; background: var(--ink); color: var(--ink); font-family:'Lora',Georgia,serif; }
-  .display{ font-family:'Yeseva One', Georgia, serif; }
+  html, body{ margin:0; padding:0; background: var(--parchment); color: var(--text); font-family:'Lora',Georgia,serif; }
+  .display{ font-family:'Playfair Display', Georgia, serif; }
 
   /* ---------- Header ---------- */
   header{
-    background: var(--ink);
-    color: var(--parchment);
-    padding: 2.8rem 1.5rem 2.2rem;
+    position: relative;
+    min-height: 300px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-color: var(--ink);
+    background-size: cover;
+    background-position: center;
     text-align:center;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 4 L54 30 L30 56 L6 30 Z' fill='none' stroke='%23E2A63B14' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='2.5' fill='%23E2A63B1f'/%3E%3C/svg%3E");
-    background-size: 60px 60px;
+    padding: 3rem 1.5rem;
   }
-  #logoImg{ max-width: 110px; max-height: 110px; border-radius: 50%; margin-bottom: 1rem; display:none; object-fit:cover; border: 3px solid var(--gold); }
-  header h1{ font-size:clamp(2.1rem,6vw,3rem); margin:0 0 0.6rem; font-weight:400; color: var(--parchment); letter-spacing: 0.01em; }
-  .flourish{ display:flex; align-items:center; justify-content:center; margin: 0 auto 0.7rem; }
-  .flourish svg{ width: 190px; height: 32px; }
-  header p.tagline{ font-family:'Lora',serif; font-style:italic; color: var(--gold); margin:0; font-size:1rem; letter-spacing:0.02em; }
+  header::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(26,21,18,0.55), rgba(26,21,18,0.72));
+  }
+  .header-content{ position:relative; z-index:2; max-width: 480px; }
+  #logoImg{ max-width: 84px; max-height: 84px; border-radius: 50%; margin-bottom: 1.1rem; display:none; object-fit:cover; border: 2px solid var(--gold); }
+  header h1{ font-size:clamp(2rem,6vw,2.9rem); margin:0; font-weight:500; color: var(--parchment); letter-spacing: 0.02em; }
+  .rule{ width: 70px; height:1px; background: var(--gold); margin: 1.1rem auto; opacity:0.85; }
+  header .hours{ font-family:'Lora',serif; font-size:0.92rem; color: var(--parchment); opacity:0.85; letter-spacing:0.02em; margin:0; }
+  header .address{ font-family:'Lora',serif; font-size:0.82rem; color: var(--parchment); opacity:0.65; margin: 0.3rem 0 0; }
 
-  .zigzag{
-    height: 18px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='18' viewBox='0 0 40 18'%3E%3Crect width='40' height='18' fill='%23241A15'/%3E%3Cpolygon points='0,18 10,0 20,18' fill='%23E2A63B'/%3E%3Cpolygon points='20,18 30,0 40,18' fill='%23A32638'/%3E%3C/svg%3E");
-    background-size: 40px 18px;
-    background-repeat: repeat-x;
-  }
+  .social-row{ display:flex; justify-content:center; gap:1rem; margin-top:1.3rem; }
+  .social-row a{ color: var(--parchment); opacity:0.8; display:flex; transition: opacity 0.15s ease; }
+  .social-row a:hover{ opacity:1; }
+  .social-row svg{ width:18px; height:18px; }
 
   /* ---------- Controls ---------- */
-  .controls{ position:sticky; top:0; z-index:30; background: var(--parchment); padding: 1rem 1rem 0.9rem; border-bottom: 2px solid var(--parchment-dim); }
-  .search-wrap{ max-width:640px; margin:0 auto 0.8rem; position:relative; }
+  .controls{ position:sticky; top:0; z-index:30; background: var(--parchment); padding: 1.2rem 1rem 0.6rem; }
+  .search-wrap{ max-width:520px; margin:0 auto 1rem; position:relative; }
   .search-wrap input{
-    width:100%; padding:0.7rem 1rem 0.7rem 2.4rem; border-radius:999px; border:1.5px solid var(--line);
-    background:#fff; font-family:'Lora',serif; font-size:0.95rem; color:var(--ink); outline:none;
+    width:100%; padding:0.55rem 0.2rem 0.55rem 1.7rem; border:none; border-bottom: 1.5px solid var(--line);
+    background:transparent; font-family:'Lora',serif; font-style:italic; font-size:0.95rem; color:var(--text); outline:none;
   }
-  .search-wrap input:focus{ border-color: var(--gold-dark); box-shadow: 0 0 0 3px rgba(226,166,59,0.18); }
-  .search-wrap svg{ position:absolute; left:0.9rem; top:50%; transform:translateY(-50%); width:15px; height:15px; opacity:0.5; }
+  .search-wrap input:focus{ border-bottom-color: var(--gold-dark); }
+  .search-wrap svg{ position:absolute; left:0; top:50%; transform:translateY(-50%); width:15px; height:15px; opacity:0.45; }
 
-  .tabs{ max-width:640px; margin:0 auto; display:flex; gap:0.5rem; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
-  .tabs::-webkit-scrollbar{ display:none; }
+  .tabs{ max-width:640px; margin:0 auto; display:flex; justify-content:center; gap:1.4rem; flex-wrap:wrap; }
   .tab{
-    font-family:'Lora',serif; font-weight:600; flex:0 0 auto; padding:0.4rem 1.05rem; border-radius:999px;
-    border:1.5px solid var(--line); background:transparent; color:var(--ink); font-size:0.86rem; cursor:pointer; white-space:nowrap;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-family:'Lora',serif; font-weight:500; padding:0.2rem 0; border:none; background:none; color:var(--text);
+    font-size:0.88rem; cursor:pointer; opacity:0.6; border-bottom: 1.5px solid transparent; letter-spacing:0.01em;
   }
-  .tab.active{ background: var(--red); border-color: var(--red); color: var(--parchment); }
+  .tab.active{ opacity:1; color: var(--wine); border-bottom-color: var(--gold-dark); }
 
   /* ---------- Menu body ---------- */
-  main{
-    background-color: var(--parchment);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 4 L54 30 L30 56 L6 30 Z' fill='none' stroke='%23A3263812' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='2.5' fill='%23E2A63B22'/%3E%3C/svg%3E");
-    background-size: 60px 60px;
-    max-width:720px; margin:0 auto; padding:1.8rem 1.2rem 4rem; min-height: 40vh;
-  }
-  .wave-divider{
-    height: 20px;
-    background-color: var(--parchment);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='20' viewBox='0 0 60 20'%3E%3Cpath d='M0 20 L0 10 Q15 0 30 10 T60 10 L60 20 Z' fill='%23241A15'/%3E%3C/svg%3E");
-    background-size: 60px 20px;
-    background-repeat: repeat-x;
-    background-position: bottom;
-  }
+  main{ max-width:680px; margin:0 auto; padding:1.6rem 1.2rem 4rem; min-height: 40vh; }
   .category-block{ margin-bottom:2.6rem; }
   .category-block h2{
-    display:flex; align-items:baseline; gap:0.6rem;
-    font-family:'Yeseva One',serif; font-weight:400; font-size:1.55rem; color:var(--red-dark);
-    margin:0 0 1rem; padding-left:0.85rem; border-left: 4px solid var(--gold);
+    text-align:center; font-family:'Playfair Display',serif; font-weight:500; font-size:1.4rem; color:var(--ink);
+    margin:0 0 1.3rem; letter-spacing:0.03em;
   }
-  .category-block h2 .count{ font-family:'Lora',serif; font-style:italic; font-size:0.78rem; color:var(--gold-dark); font-weight:500; }
 
   .dish{
-    display:flex; justify-content:space-between; align-items:center; gap:0.8rem; padding:0.9rem 0;
+    display:flex; justify-content:space-between; align-items:flex-start; gap:0.8rem; padding:1rem 0;
     border-bottom:1px solid var(--line); cursor:pointer; background:none; border-left:none; border-right:none; border-top:none;
     width:100%; text-align:left; font:inherit; color:inherit;
   }
   .dish:last-child{ border-bottom:none; }
-  .dish-thumb{ width:58px; height:58px; border-radius:10px; object-fit:cover; flex-shrink:0; background: var(--parchment-dim); }
+  .dish-thumb{ width:54px; height:54px; border-radius:6px; object-fit:cover; flex-shrink:0; background: var(--parchment-dim); }
   .dish-left{ flex:1; min-width:0; }
-  .dish-name{ font-size:1.1rem; font-weight:500; color:var(--ink); }
-  .dish-badges{ margin-top:0.3rem; display:flex; gap:0.35rem; flex-wrap:wrap; }
-  .badge{ font-family:'Lora',serif; font-size:0.68rem; padding:0.14rem 0.55rem; border-radius:999px; font-weight:600; }
-  .badge.veg{ background:#dce9e4; color: var(--teal); }
-  .badge.spicy{ background:#f2dade; color: var(--red-dark); }
-  .badge.gf{ background:#f2e3c4; color: var(--gold-dark); }
-  .dish-price{ font-family:'Lora',serif; font-weight:700; color: var(--red-dark); white-space:nowrap; font-size:1.02rem; }
+  .dish-name{ font-size:1.06rem; font-weight:500; color:var(--ink); }
+  .dish-tags{ margin-top:0.35rem; display:flex; gap:0.4rem; flex-wrap:wrap; align-items:center; }
+  .badge{ font-family:'Lora',serif; font-style:italic; font-size:0.72rem; color: var(--gold-dark); }
+  .allergen-icon{ width:15px; height:15px; opacity:0.55; }
+  .dish-price{ font-family:'Lora',serif; font-weight:600; color: var(--wine); white-space:nowrap; font-size:1rem; padding-top:0.1rem; }
 
-  .empty-state{ text-align:center; padding:3rem 1rem; color:var(--ink); opacity:0.55; font-family:'Lora',serif; font-style:italic; display:none; }
+  .empty-state{ text-align:center; padding:3rem 1rem; color:var(--text); opacity:0.5; font-family:'Lora',serif; font-style:italic; display:none; }
   .empty-state.show{ display:block; }
 
   /* ---------- Modal ---------- */
-  .modal-backdrop{ position:fixed; inset:0; background:rgba(36,26,21,0.6); display:flex; align-items:flex-end; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.2s ease; }
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(26,21,18,0.6); display:flex; align-items:flex-end; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.2s ease; }
   .modal-backdrop.open{ opacity:1; pointer-events:auto; }
   @media (min-width:640px){ .modal-backdrop{ align-items:center; } }
   .modal{
-    background: var(--parchment); width:100%; max-width:480px; border-radius:18px 18px 0 0;
-    padding:1.8rem 1.6rem 2.2rem; transform:translateY(24px); transition:transform 0.22s ease;
-    max-height:86vh; overflow-y:auto; position:relative; border-top: 4px solid var(--gold);
+    background: var(--parchment); width:100%; max-width:460px; border-radius:10px 10px 0 0;
+    padding:1.9rem 1.7rem 2.2rem; transform:translateY(24px); transition:transform 0.22s ease;
+    max-height:86vh; overflow-y:auto; position:relative;
   }
-  @media (min-width:640px){ .modal{ border-radius:18px; } }
+  @media (min-width:640px){ .modal{ border-radius:10px; } }
   .modal-backdrop.open .modal{ transform:translateY(0); }
-  .modal-img{ width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:1rem; display:none; }
+  .modal-img{ width:100%; max-height:210px; object-fit:cover; border-radius:6px; margin-bottom:1.1rem; display:none; }
   .modal-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
-  .modal h3{ font-family:'Yeseva One',serif; font-weight:400; font-size:1.5rem; margin:0 0 0.3rem; color:var(--red-dark); }
-  .modal .modal-price{ font-family:'Lora',serif; font-weight:700; font-size:1.2rem; color: var(--red-dark); white-space:nowrap; }
-  .modal-close{ background: var(--parchment-dim); border:none; width:30px; height:30px; border-radius:50%; font-size:1rem; cursor:pointer; color:var(--ink); position:absolute; top:1.4rem; right:1.4rem; }
-  .modal-badges{ margin:0.6rem 0 1rem; display:flex; gap:0.4rem; flex-wrap:wrap; }
-  .modal p.desc{ font-size:1rem; line-height:1.65; margin:0 0 1rem; }
-  .modal .allergens{ font-family:'Lora',serif; font-style:italic; font-size:0.85rem; color:var(--ink); opacity:0.65; border-top:1px solid var(--line); padding-top:0.9rem; }
+  .modal h3{ font-family:'Playfair Display',serif; font-weight:500; font-size:1.4rem; margin:0 0 0.3rem; color:var(--ink); }
+  .modal .modal-price{ font-family:'Lora',serif; font-weight:600; font-size:1.1rem; color: var(--wine); white-space:nowrap; }
+  .modal-close{ background: var(--parchment-dim); border:none; width:28px; height:28px; border-radius:50%; font-size:0.95rem; cursor:pointer; color:var(--text); position:absolute; top:1.3rem; right:1.3rem; }
+  .modal-badges{ margin:0.5rem 0 1rem; display:flex; gap:0.5rem; flex-wrap:wrap; }
+  .modal p.desc{ font-size:0.98rem; line-height:1.65; margin:0 0 1rem; }
+  .allergen-list{ display:flex; flex-wrap:wrap; gap:0.9rem; border-top:1px solid var(--line); padding-top:1rem; }
+  .allergen-list .allergen-item{ display:flex; align-items:center; gap:0.35rem; font-family:'Lora',serif; font-size:0.78rem; opacity:0.75; }
+  .allergen-list .allergen-item svg{ width:16px; height:16px; opacity:0.7; }
+  .modal .note{ font-family:'Lora',serif; font-style:italic; font-size:0.82rem; color:var(--text); opacity:0.6; margin-top:0.7rem; }
 
-  footer{ text-align:center; padding:1.8rem 1rem 2.4rem; font-family:'Lora',serif; font-style:italic; font-size:0.85rem; color: var(--gold); background: var(--ink); }
+  footer{ text-align:center; padding:2rem 1rem 2.4rem; border-top: 1px solid var(--line); }
+  footer p{ font-family:'Lora',serif; font-size:0.82rem; color: var(--text); opacity:0.55; margin:0; }
 
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
 </style>
 </head>
 <body>
 
-<header>
-  <img id="logoImg" alt="Logo">
-  <h1 id="restaurantName" class="display">Caricamento...</h1>
-  <div class="flourish">
-    <svg viewBox="0 0 220 36" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 18 Q60 6 96 18" stroke="#E2A63B" stroke-width="1.2" fill="none" opacity="0.85"/>
-      <path d="M200 18 Q160 6 124 18" stroke="#E2A63B" stroke-width="1.2" fill="none" opacity="0.85"/>
-      <path d="M42 17 Q52 4 65 13 Q54 20 42 17 Z" fill="#2F5D50"/>
-      <path d="M178 17 Q168 4 155 13 Q166 20 178 17 Z" fill="#2F5D50"/>
-      <ellipse cx="20" cy="19" rx="9" ry="7" fill="#E2A63B" stroke="#B9832F" stroke-width="1"/>
-      <ellipse cx="200" cy="19" rx="9" ry="7" fill="#E2A63B" stroke="#B9832F" stroke-width="1"/>
-      <polygon points="110,9 119,18 110,27 101,18" fill="#A32638"/>
-    </svg>
+<header id="siteHeader">
+  <div class="header-content">
+    <img id="logoImg" alt="Logo">
+    <h1 id="restaurantName" class="display">Caricamento...</h1>
+    <div class="rule"></div>
+    <p class="hours" id="restaurantHours"></p>
+    <p class="address" id="restaurantAddress"></p>
+    <div class="social-row" id="socialRow"></div>
   </div>
-  <p class="tagline" id="restaurantTagline"></p>
 </header>
-<div class="zigzag"></div>
 
 <div class="controls">
   <div class="search-wrap">
@@ -163,8 +148,7 @@
 
 <div class="empty-state" id="emptyState">Nessun piatto trovato. Prova un'altra ricerca.</div>
 
-<div class="wave-divider"></div>
-<footer id="footerInfo"></footer>
+<footer><p id="footerInfo"></p></footer>
 
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -176,12 +160,32 @@
     </div>
     <div class="modal-badges" id="modalBadges"></div>
     <p class="desc" id="modalDesc"></p>
-    <p class="allergens" id="modalAllergens"></p>
+    <div class="allergen-list" id="modalAllergenList"></div>
+    <p class="note" id="modalAllergenNote"></p>
   </div>
 </div>
 
 <script>
-  const BADGE_LABELS = { veg: "Vegetariano", spicy: "Piccante", gf: "Senza glutine" };
+  // ---------------- ICONE ALLERGENI (SVG minimali) ----------------
+  const ALLERGENS = {
+    glutine:   { label: "Glutine",        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M12 6c-2 0-3 1-3 2s1 1.5 3 1.5S15 10 15 11s-1 2-3 2m0 0c-2 0-3 1-3 2s1 1.5 3 1.5"/></svg>' },
+    lattosio:  { label: "Lattosio",       svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h6l1 4-1 2v12a1 1 0 0 1-1 1H10a1 1 0 0 1-1-1V8L8 6z"/></svg>' },
+    uova:      { label: "Uova",           svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="13" rx="6" ry="8"/></svg>' },
+    pesce:     { label: "Pesce",          svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c3-4 8-6 13-4 2 .8 4 2.3 5 4-1 1.7-3 3.2-5 4-5 2-10 0-13-4z"/><circle cx="15" cy="11" r="0.6" fill="currentColor"/><path d="M3 12l-2-3m2 3l-2 3"/></svg>' },
+    crostacei: { label: "Crostacei",      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 14c0-5 3-9 7-9s5 3 4 6c-1 2-3 2-4 1M6 14c-2 1-3 3-2 5m2-5l3 2m-1-9L6 5m4 3L8 4"/></svg>' },
+    molluschi: { label: "Molluschi",      svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4c4 1 7 5 7 10 0 1-3 2-7 2s-7-1-7-2c0-5 3-9 7-10z"/><path d="M12 6v10M9 8v8M15 8v8"/></svg>' },
+    frutta_guscio: { label: "Frutta a guscio", svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c4 0 6 4 6 9s-2 9-6 9-6-4-6-9 2-9 6-9z"/><path d="M12 3v18"/></svg>' },
+    soia:      { label: "Soia",           svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="9" cy="9" rx="3" ry="4"/><ellipse cx="15" cy="15" rx="3" ry="4"/></svg>' },
+    solfiti:   { label: "Solfiti",        svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3h8M9 3v5l-4 8a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-4-8V3"/></svg>' }
+  };
+
+  const SOCIAL_ICONS = {
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor"/></svg>',
+    facebook:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 8h-2a2 2 0 0 0-2 2v2H9v3h2v6h3v-6h2.2l.8-3H14v-1.5c0-.5.3-1 1-1h2z"/><circle cx="12" cy="12" r="9"/></svg>',
+    whatsapp:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 17l-1.5 3.5L9 19c1 .5 2 .8 3 .8 4.5 0 8-3.6 8-8s-3.5-8-8-8-8 3.6-8 8c0 1.6.5 3 1.3 4.2"/><path d="M9.5 9c0 3 2.5 5.5 5.5 5.5"/></svg>',
+    website:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9z"/></svg>'
+  };
+
   let MENU_DATA = null;
   let activeCategory = 'Tutti';
 
@@ -199,16 +203,34 @@
       return;
     }
 
-    document.title = MENU_DATA.restaurant.name || 'Menu Digitale';
-    document.getElementById('restaurantName').textContent = MENU_DATA.restaurant.name || '';
-    document.getElementById('restaurantTagline').textContent = MENU_DATA.restaurant.tagline || '';
-    document.getElementById('footerInfo').textContent = [MENU_DATA.restaurant.name, MENU_DATA.restaurant.address, MENU_DATA.restaurant.hours].filter(Boolean).join(' · ');
+    const r = MENU_DATA.restaurant || {};
+    document.title = r.name || 'Menu Digitale';
+    document.getElementById('restaurantName').textContent = r.name || '';
+    document.getElementById('restaurantHours').textContent = r.hours || '';
+    document.getElementById('restaurantAddress').textContent = r.address || '';
+    document.getElementById('footerInfo').textContent = [r.name, r.address].filter(Boolean).join(' · ');
 
-    if(MENU_DATA.restaurant.logo){
+    if(r.logo){
       const logoImg = document.getElementById('logoImg');
-      logoImg.src = MENU_DATA.restaurant.logo;
+      logoImg.src = r.logo;
       logoImg.style.display = 'inline-block';
     }
+    if(r.background){
+      document.getElementById('siteHeader').style.backgroundImage = `url("${r.background}")`;
+    }
+
+    const socialRow = document.getElementById('socialRow');
+    const social = r.social || {};
+    ['instagram','facebook','whatsapp','website'].forEach(key => {
+      if(social[key]){
+        const a = document.createElement('a');
+        a.href = social[key];
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.innerHTML = SOCIAL_ICONS[key];
+        socialRow.appendChild(a);
+      }
+    });
 
     buildTabs();
     render();
@@ -243,7 +265,7 @@
       const section = document.createElement('section');
       section.className = 'category-block';
       const h2 = document.createElement('h2');
-      h2.innerHTML = `${catBlock.name} <span class="count">(${filteredItems.length})</span>`;
+      h2.textContent = catBlock.name;
       section.appendChild(h2);
 
       filteredItems.forEach(item => {
@@ -266,17 +288,23 @@
         name.textContent = item.name;
         left.appendChild(name);
 
-        if(item.badges && item.badges.length){
-          const badgeWrap = document.createElement('div');
-          badgeWrap.className = 'dish-badges';
-          item.badges.forEach(b => {
-            const span = document.createElement('span');
-            span.className = 'badge ' + b;
-            span.textContent = BADGE_LABELS[b] || b;
-            badgeWrap.appendChild(span);
-          });
-          left.appendChild(badgeWrap);
-        }
+        const tagsRow = document.createElement('div');
+        tagsRow.className = 'dish-tags';
+        (item.badges || []).forEach(b => {
+          const span = document.createElement('span');
+          span.className = 'badge';
+          span.textContent = b === 'veg' ? 'Vegetariano' : b === 'spicy' ? 'Piccante' : b === 'gf' ? 'Senza glutine' : b;
+          tagsRow.appendChild(span);
+        });
+        (item.allergenIcons || []).forEach(key => {
+          if(!ALLERGENS[key]) return;
+          const span = document.createElement('span');
+          span.className = 'allergen-icon';
+          span.title = ALLERGENS[key].label;
+          span.innerHTML = ALLERGENS[key].svg;
+          tagsRow.appendChild(span);
+        });
+        if(tagsRow.children.length) left.appendChild(tagsRow);
 
         const price = document.createElement('div');
         price.className = 'dish-price';
@@ -299,7 +327,8 @@
   const modalPrice = document.getElementById('modalPrice');
   const modalDesc = document.getElementById('modalDesc');
   const modalBadges = document.getElementById('modalBadges');
-  const modalAllergens = document.getElementById('modalAllergens');
+  const modalAllergenList = document.getElementById('modalAllergenList');
+  const modalAllergenNote = document.getElementById('modalAllergenNote');
   const modalImg = document.getElementById('modalImg');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
 
@@ -307,14 +336,22 @@
     modalTitle.textContent = item.name;
     modalPrice.textContent = '€ ' + Number(item.price || 0).toFixed(2);
     modalDesc.textContent = item.desc || '';
-    modalAllergens.textContent = item.allergens || '';
     modalBadges.innerHTML = '';
     (item.badges || []).forEach(b => {
       const span = document.createElement('span');
-      span.className = 'badge ' + b;
-      span.textContent = BADGE_LABELS[b] || b;
+      span.className = 'badge';
+      span.textContent = b === 'veg' ? 'Vegetariano' : b === 'spicy' ? 'Piccante' : b === 'gf' ? 'Senza glutine' : b;
       modalBadges.appendChild(span);
     });
+    modalAllergenList.innerHTML = '';
+    (item.allergenIcons || []).forEach(key => {
+      if(!ALLERGENS[key]) return;
+      const div = document.createElement('div');
+      div.className = 'allergen-item';
+      div.innerHTML = ALLERGENS[key].svg + '<span>' + ALLERGENS[key].label + '</span>';
+      modalAllergenList.appendChild(div);
+    });
+    modalAllergenNote.textContent = item.allergens || '';
     if(item.image){ modalImg.src = item.image; modalImg.style.display = 'block'; }
     else{ modalImg.style.display = 'none'; }
     modalBackdrop.classList.add('open');
