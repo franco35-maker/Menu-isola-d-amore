@@ -4,7 +4,9 @@
     "tagline": "MENU DIGITALE",
     "address": "Via G. Battista Grassi, 5, 22069 Rovellasca CO",
     "hours": "giovedì 11:30–22  venerdì 11:30–14:30  sabato 11:30–22  domenica 11:30–14:30 18:30–22  lunedì 11:30–14:30 18:30–22  martedì 11:30–14:30 18:30–22  mercoledì Chiuso",
-    "logo": "images/logo-1788996881012.jpg"
+    "logo": "images/logo-1788996881012.jpg",
+    "social": {},
+    "background": "images/sfondo-1789077549685.jpg"
   },
   "categories": [
     {
@@ -20,7 +22,8 @@
           "badges": [
             "veg"
           ],
-          "allergens": ""
+          "allergens": "",
+          "allergenIcons": []
         },
         {
           "id": "item-mtuqk1p5fd5ra",
@@ -29,7 +32,8 @@
           "desc": "",
           "image": "",
           "badges": [],
-          "allergens": ""
+          "allergens": "",
+          "allergenIcons": []
         }
       ]
     },
@@ -44,7 +48,8 @@
           "desc": "Pasta fresca all'uovo con ragù di manzo cotto lentamente per 6 ore.",
           "image": "",
           "badges": [],
-          "allergens": "Contiene glutine, uova."
+          "allergens": "Contiene glutine, uova.",
+          "allergenIcons": []
         }
       ]
     }
