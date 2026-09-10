@@ -29,12 +29,13 @@
     color: var(--parchment);
     padding: 2.8rem 1.5rem 2.2rem;
     text-align:center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 4 L54 30 L30 56 L6 30 Z' fill='none' stroke='%23E2A63B14' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='2.5' fill='%23E2A63B1f'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
   }
   #logoImg{ max-width: 110px; max-height: 110px; border-radius: 50%; margin-bottom: 1rem; display:none; object-fit:cover; border: 3px solid var(--gold); }
   header h1{ font-size:clamp(2.1rem,6vw,3rem); margin:0 0 0.6rem; font-weight:400; color: var(--parchment); letter-spacing: 0.01em; }
-  .flourish{ display:flex; align-items:center; justify-content:center; gap:0.7rem; margin: 0 auto 0.7rem; max-width: 260px; }
-  .flourish .rule{ flex:1; height:1px; background: var(--gold); opacity:0.6; }
-  .flourish svg{ width:10px; height:10px; flex-shrink:0; }
+  .flourish{ display:flex; align-items:center; justify-content:center; margin: 0 auto 0.7rem; }
+  .flourish svg{ width: 190px; height: 32px; }
   header p.tagline{ font-family:'Lora',serif; font-style:italic; color: var(--gold); margin:0; font-size:1rem; letter-spacing:0.02em; }
 
   .zigzag{
@@ -64,7 +65,20 @@
   .tab.active{ background: var(--red); border-color: var(--red); color: var(--parchment); }
 
   /* ---------- Menu body ---------- */
-  main{ background: var(--parchment); max-width:720px; margin:0 auto; padding:1.8rem 1.2rem 4rem; min-height: 40vh; }
+  main{
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 4 L54 30 L30 56 L6 30 Z' fill='none' stroke='%23A3263812' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='2.5' fill='%23E2A63B22'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+    max-width:720px; margin:0 auto; padding:1.8rem 1.2rem 4rem; min-height: 40vh;
+  }
+  .wave-divider{
+    height: 20px;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='20' viewBox='0 0 60 20'%3E%3Cpath d='M0 20 L0 10 Q15 0 30 10 T60 10 L60 20 Z' fill='%23241A15'/%3E%3C/svg%3E");
+    background-size: 60px 20px;
+    background-repeat: repeat-x;
+    background-position: bottom;
+  }
   .category-block{ margin-bottom:2.6rem; }
   .category-block h2{
     display:flex; align-items:baseline; gap:0.6rem;
@@ -123,9 +137,15 @@
   <img id="logoImg" alt="Logo">
   <h1 id="restaurantName" class="display">Caricamento...</h1>
   <div class="flourish">
-    <span class="rule"></span>
-    <svg viewBox="0 0 10 10"><polygon points="5,0 10,5 5,10 0,5" fill="#E2A63B"/></svg>
-    <span class="rule"></span>
+    <svg viewBox="0 0 220 36" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 18 Q60 6 96 18" stroke="#E2A63B" stroke-width="1.2" fill="none" opacity="0.85"/>
+      <path d="M200 18 Q160 6 124 18" stroke="#E2A63B" stroke-width="1.2" fill="none" opacity="0.85"/>
+      <path d="M42 17 Q52 4 65 13 Q54 20 42 17 Z" fill="#2F5D50"/>
+      <path d="M178 17 Q168 4 155 13 Q166 20 178 17 Z" fill="#2F5D50"/>
+      <ellipse cx="20" cy="19" rx="9" ry="7" fill="#E2A63B" stroke="#B9832F" stroke-width="1"/>
+      <ellipse cx="200" cy="19" rx="9" ry="7" fill="#E2A63B" stroke="#B9832F" stroke-width="1"/>
+      <polygon points="110,9 119,18 110,27 101,18" fill="#A32638"/>
+    </svg>
   </div>
   <p class="tagline" id="restaurantTagline"></p>
 </header>
@@ -143,6 +163,7 @@
 
 <div class="empty-state" id="emptyState">Nessun piatto trovato. Prova un'altra ricerca.</div>
 
+<div class="wave-divider"></div>
 <footer id="footerInfo"></footer>
 
 <div class="modal-backdrop" id="modalBackdrop">
