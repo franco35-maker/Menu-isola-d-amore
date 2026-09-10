@@ -7,8 +7,8 @@
 <script src="config.js"></script>
 <style>
   :root{
-    --ink:#1f2e22; --paper:#f6f1e4; --paper-dim:#ece4d0; --wine:#8c2f39; --wine-dark:#6e2129;
-    --gold:#b08968; --charcoal:#2b2621; --line:rgba(43,38,33,0.18); --ok:#3c5a34; --err:#8c2f39;
+    --ink:#1a1512; --paper:#faf6ee; --paper-dim:#f0e9d8; --wine:#6d2430; --wine-dark:#551c25;
+    --gold:#b8935a; --charcoal:#2a231d; --line:rgba(42,35,29,0.18); --err:#8c2f39;
   }
   *{ box-sizing:border-box; }
   body{ margin:0; background:var(--paper); font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif; color:var(--charcoal); }
@@ -31,7 +31,7 @@
   .card h2{ font-size:1.05rem; margin:0 0 1rem; color:var(--wine-dark); }
   .field{ margin-bottom:0.9rem; }
   .field label{ display:block; font-size:0.8rem; font-weight:600; margin-bottom:0.3rem; opacity:0.85; }
-  .field input[type=text], .field input[type=number], .field textarea{
+  .field input[type=text], .field input[type=number], .field input[type=url], .field textarea{
     width:100%; padding:0.55rem 0.7rem; border:1px solid var(--line); border-radius:8px; font-size:0.92rem; font-family:inherit;
   }
   .field textarea{ min-height:64px; resize:vertical; }
@@ -40,6 +40,7 @@
 
   .img-upload{ display:flex; align-items:center; gap:0.8rem; margin-top:0.2rem; }
   .img-preview{ width:64px; height:64px; border-radius:10px; object-fit:cover; background:var(--paper-dim); flex-shrink:0; }
+  .img-preview.wide{ width:110px; height:64px; border-radius:8px; }
   .img-upload input[type=file]{ font-size:0.82rem; }
 
   .badges-row{ display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.3rem; }
@@ -61,6 +62,7 @@
 
   .spinner{ display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.4); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; vertical-align:middle; margin-right:0.4rem; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
+  .section-note{ font-size:0.78rem; opacity:0.6; margin: -0.4rem 0 0.9rem; }
 </style>
 </head>
 <body>
@@ -101,8 +103,13 @@
   let DATA = null;
   let DATA_SHA = null;
 
-  function uid(prefix){ return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  const ALLERGEN_LABELS = {
+    glutine: "Glutine", lattosio: "Lattosio", uova: "Uova", pesce: "Pesce",
+    crostacei: "Crostacei", molluschi: "Molluschi", frutta_guscio: "Frutta a guscio",
+    soia: "Soia", solfiti: "Solfiti"
+  };
 
+  function uid(prefix){ return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
   function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
   function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,'')))); }
 
@@ -131,6 +138,7 @@
       if(!res.ok) throw new Error('unauthorized');
       const json = await res.json();
       DATA = JSON.parse(b64DecodeUnicode(json.content));
+      if(!DATA.restaurant.social) DATA.restaurant.social = {};
       DATA_SHA = json.sha;
       localStorage.setItem('gh_menu_admin_token', token);
       showEditor();
@@ -181,8 +189,8 @@
     });
   }
 
-  async function uploadImage(file, slug, onDone){
-    const base64 = await compressImage(file, 1000, 0.75);
+  async function uploadImage(file, slug, maxWidth, onDone){
+    const base64 = await compressImage(file, maxWidth, 0.78);
     const path = 'images/' + slug + '-' + Date.now() + '.jpg';
     const res = await ghFetch(path, {
       method: 'PUT',
@@ -205,55 +213,72 @@
     renderCategories();
   }
 
+  function makeImageField(labelText, currentPath, previewWide, maxWidth, slug, onUploaded){
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    const row = document.createElement('div');
+    row.className = 'img-upload';
+    const preview = document.createElement('img');
+    preview.className = 'img-preview' + (previewWide ? ' wide' : '');
+    if(currentPath) preview.src = currentPath;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file'; fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', async () => {
+      if(!fileInput.files[0]) return;
+      preview.style.opacity = '0.5';
+      await uploadImage(fileInput.files[0], slug, maxWidth, (path) => {
+        onUploaded(path);
+        preview.src = path + '?t=' + Date.now();
+        preview.style.opacity = '1';
+      });
+    });
+    row.appendChild(preview); row.appendChild(fileInput);
+    wrap.appendChild(label); wrap.appendChild(row);
+    return wrap;
+  }
+
+  function makeTextField(labelText, value, onChange, type){
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    const input = document.createElement('input');
+    input.type = type || 'text';
+    input.value = value || '';
+    input.addEventListener('input', () => onChange(input.value));
+    wrap.appendChild(label); wrap.appendChild(input);
+    return wrap;
+  }
+
   function renderSettings(){
     settingsCard.innerHTML = '';
     const h2 = document.createElement('h2');
     h2.textContent = 'Impostazioni ristorante';
     settingsCard.appendChild(h2);
 
-    const fields = [
-      { key:'name', label:'Nome ristorante' },
-      { key:'tagline', label:'Sottotitolo (es. MENU DIGITALE)' },
-      { key:'address', label:'Indirizzo' },
-      { key:'hours', label:'Orari' }
-    ];
-    fields.forEach(f => {
-      const wrap = document.createElement('div');
-      wrap.className = 'field';
-      const label = document.createElement('label');
-      label.textContent = f.label;
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = DATA.restaurant[f.key] || '';
-      input.addEventListener('input', () => { DATA.restaurant[f.key] = input.value; });
-      wrap.appendChild(label); wrap.appendChild(input);
-      settingsCard.appendChild(wrap);
-    });
+    settingsCard.appendChild(makeTextField('Nome ristorante', DATA.restaurant.name, v => DATA.restaurant.name = v));
+    settingsCard.appendChild(makeTextField('Orari (mostrati sotto il titolo)', DATA.restaurant.hours, v => DATA.restaurant.hours = v));
+    settingsCard.appendChild(makeTextField('Indirizzo', DATA.restaurant.address, v => DATA.restaurant.address = v));
 
-    const logoWrap = document.createElement('div');
-    logoWrap.className = 'field';
-    const logoLabel = document.createElement('label');
-    logoLabel.textContent = 'Logo';
-    const imgUploadRow = document.createElement('div');
-    imgUploadRow.className = 'img-upload';
-    const preview = document.createElement('img');
-    preview.className = 'img-preview';
-    if(DATA.restaurant.logo) preview.src = DATA.restaurant.logo;
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', async () => {
-      if(!fileInput.files[0]) return;
-      preview.style.opacity = '0.5';
-      await uploadImage(fileInput.files[0], 'logo', (path) => {
-        DATA.restaurant.logo = path;
-        preview.src = path + '?t=' + Date.now();
-        preview.style.opacity = '1';
-      });
-    });
-    imgUploadRow.appendChild(preview); imgUploadRow.appendChild(fileInput);
-    logoWrap.appendChild(logoLabel); logoWrap.appendChild(imgUploadRow);
-    settingsCard.appendChild(logoWrap);
+    settingsCard.appendChild(makeImageField('Logo', DATA.restaurant.logo, false, 400, 'logo', (path) => { DATA.restaurant.logo = path; }));
+    settingsCard.appendChild(makeImageField('Immagine di sfondo (intestazione)', DATA.restaurant.background, true, 1600, 'sfondo', (path) => { DATA.restaurant.background = path; }));
+
+    const socialHeading = document.createElement('h2');
+    socialHeading.textContent = 'Social e contatti';
+    socialHeading.style.marginTop = '1.4rem';
+    settingsCard.appendChild(socialHeading);
+    const note = document.createElement('p');
+    note.className = 'section-note';
+    note.textContent = 'Lascia vuoto un campo per non mostrare quell\'icona sul sito.';
+    settingsCard.appendChild(note);
+
+    const social = DATA.restaurant.social;
+    settingsCard.appendChild(makeTextField('Instagram (link completo)', social.instagram, v => social.instagram = v, 'url'));
+    settingsCard.appendChild(makeTextField('Facebook (link completo)', social.facebook, v => social.facebook = v, 'url'));
+    settingsCard.appendChild(makeTextField('WhatsApp (es. https://wa.me/393331234567)', social.whatsapp, v => social.whatsapp = v, 'url'));
+    settingsCard.appendChild(makeTextField('Sito web', social.website, v => social.website = v, 'url'));
   }
 
   function renderCategories(){
@@ -287,7 +312,7 @@
       addDishBtn.className = 'add-btn';
       addDishBtn.textContent = '+ Aggiungi piatto';
       addDishBtn.addEventListener('click', () => {
-        cat.items.push({ id: uid('item'), name:'Nuovo piatto', price:0, desc:'', image:'', badges:[], allergens:'' });
+        cat.items.push({ id: uid('item'), name:'Nuovo piatto', price:0, desc:'', image:'', badges:[], allergenIcons:[], allergens:'' });
         renderCategories();
       });
       card.appendChild(addDishBtn);
@@ -297,6 +322,7 @@
   }
 
   function renderDishCard(cat, item){
+    if(!item.allergenIcons) item.allergenIcons = [];
     const card = document.createElement('div');
     card.className = 'dish-card';
 
@@ -313,15 +339,7 @@
 
     const row2 = document.createElement('div');
     row2.className = 'row2';
-
-    const nameField = document.createElement('div');
-    nameField.className = 'field';
-    nameField.innerHTML = '<label>Nome piatto</label>';
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text'; nameInput.value = item.name;
-    nameInput.addEventListener('input', () => { item.name = nameInput.value; });
-    nameField.appendChild(nameInput);
-
+    row2.appendChild(makeTextField('Nome piatto', item.name, v => item.name = v));
     const priceField = document.createElement('div');
     priceField.className = 'field';
     priceField.innerHTML = '<label>Prezzo (€)</label>';
@@ -329,8 +347,7 @@
     priceInput.type = 'number'; priceInput.step = '0.5'; priceInput.value = item.price;
     priceInput.addEventListener('input', () => { item.price = parseFloat(priceInput.value) || 0; });
     priceField.appendChild(priceInput);
-
-    row2.appendChild(nameField); row2.appendChild(priceField);
+    row2.appendChild(priceField);
     card.appendChild(row2);
 
     const descField = document.createElement('div');
@@ -342,37 +359,7 @@
     descField.appendChild(descInput);
     card.appendChild(descField);
 
-    const allergensField = document.createElement('div');
-    allergensField.className = 'field';
-    allergensField.innerHTML = '<label>Allergeni</label>';
-    const allergensInput = document.createElement('input');
-    allergensInput.type = 'text'; allergensInput.value = item.allergens || '';
-    allergensInput.addEventListener('input', () => { item.allergens = allergensInput.value; });
-    allergensField.appendChild(allergensInput);
-    card.appendChild(allergensField);
-
-    const imgField = document.createElement('div');
-    imgField.className = 'field';
-    imgField.innerHTML = '<label>Foto piatto</label>';
-    const imgRow = document.createElement('div');
-    imgRow.className = 'img-upload';
-    const preview = document.createElement('img');
-    preview.className = 'img-preview';
-    if(item.image) preview.src = item.image;
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file'; fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', async () => {
-      if(!fileInput.files[0]) return;
-      preview.style.opacity = '0.5';
-      await uploadImage(fileInput.files[0], slugify(item.name), (path) => {
-        item.image = path;
-        preview.src = path + '?t=' + Date.now();
-        preview.style.opacity = '1';
-      });
-    });
-    imgRow.appendChild(preview); imgRow.appendChild(fileInput);
-    imgField.appendChild(imgRow);
-    card.appendChild(imgField);
+    card.appendChild(makeImageField('Foto piatto', item.image, false, 1000, slugify(item.name), (path) => { item.image = path; }));
 
     const badgesField = document.createElement('div');
     badgesField.className = 'field';
@@ -389,12 +376,40 @@
         if(cb.checked){ if(!item.badges.includes(key)) item.badges.push(key); }
         else{ item.badges = item.badges.filter(b => b !== key); }
       });
-      wrap.appendChild(cb);
-      wrap.appendChild(document.createTextNode(label));
+      wrap.appendChild(cb); wrap.appendChild(document.createTextNode(label));
       badgesRow.appendChild(wrap);
     });
     badgesField.appendChild(badgesRow);
     card.appendChild(badgesField);
+
+    const allergenField = document.createElement('div');
+    allergenField.className = 'field';
+    allergenField.innerHTML = '<label>Icone allergeni</label>';
+    const allergenRow = document.createElement('div');
+    allergenRow.className = 'badges-row';
+    Object.entries(ALLERGEN_LABELS).forEach(([key, label]) => {
+      const wrap = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = item.allergenIcons.includes(key);
+      cb.addEventListener('change', () => {
+        if(cb.checked){ if(!item.allergenIcons.includes(key)) item.allergenIcons.push(key); }
+        else{ item.allergenIcons = item.allergenIcons.filter(a => a !== key); }
+      });
+      wrap.appendChild(cb); wrap.appendChild(document.createTextNode(label));
+      allergenRow.appendChild(wrap);
+    });
+    allergenField.appendChild(allergenRow);
+    card.appendChild(allergenField);
+
+    const noteField = document.createElement('div');
+    noteField.className = 'field';
+    noteField.innerHTML = '<label>Nota allergeni (facoltativa, testo libero)</label>';
+    const noteInput = document.createElement('input');
+    noteInput.type = 'text'; noteInput.value = item.allergens || '';
+    noteInput.addEventListener('input', () => { item.allergens = noteInput.value; });
+    noteField.appendChild(noteInput);
+    card.appendChild(noteField);
 
     return card;
   }
@@ -427,7 +442,6 @@
     saveBtn.disabled = false;
   });
 
-  // ---------------- AUTO-LOGIN IF TOKEN SAVED ----------------
   if(TOKEN){ tokenInput.value = TOKEN; tryLogin(TOKEN); }
 </script>
 </body>
